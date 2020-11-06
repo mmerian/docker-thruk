@@ -24,7 +24,7 @@ docker build $DIR -t ${IMAGE_NAME}:latest $BUILD_OPTIONS
 
 if [ "$TAG_VERSION" == "yes" ]; then
     # Get version number, in order to create tag
-    IMAGE_VER=`docker run ${IMAGE_NAME}:latest apt-cache madison thruk|cut -f 2 -d '|'|tr -d [:space:]`
+    IMAGE_VER=`docker run ${IMAGE_NAME}:latest thruk --version|cut -d ' ' -f 3 |tr '~' '-'`
     echo "Tagging version $IMAGE_VER"
     docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:$IMAGE_VER
     if [ "$PUSH_TAG" == "yes" ]; then
