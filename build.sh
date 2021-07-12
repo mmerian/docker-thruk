@@ -5,6 +5,8 @@ TAG_VERSION='no'
 PUSH_TAG='no'
 IMAGE_NAME=mmerian/thruk
 
+docker pull debian:buster-slim
+
 while getopts "ntp" option; do
     case $option in
         n)
@@ -24,7 +26,7 @@ docker build $DIR -t ${IMAGE_NAME}:latest $BUILD_OPTIONS
 
 if [ "$TAG_VERSION" == "yes" ]; then
     # Get version number, in order to create tag
-    IMAGE_VER=`docker run ${IMAGE_NAME}:latest thruk --version|cut -d ' ' -f 3 |tr '~' '-'`
+    IMAGE_VER=`docker run ${IMAGE_NAME}:latest dpkg -s thruk|egrep '^Version:'|cut -d ' ' -f 2|tr '~' '-'|tr '+' '-'`
     echo "Tagging version $IMAGE_VER"
     docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:$IMAGE_VER
     if [ "$PUSH_TAG" == "yes" ]; then
