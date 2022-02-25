@@ -1,15 +1,21 @@
-FROM debian:buster-slim
-MAINTAINER Maxime Mérian <maxime@merian.me>
+FROM debian:bullseye-slim
+LABEL org.opencontainers.image.authors="Maxime Mérian <maxime@merian.me>"
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gnupg ca-certificates
+    apt-get install -y --no-install-recommends \
+        ca-certificates curl gnupg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-key adv --fetch-keys https://labs.consol.de/repo/stable/RPM-GPG-KEY
-RUN echo "deb http://labs.consol.de/repo/stable/debian buster main" > /etc/apt/sources.list.d/labs-consol-stable.list
+RUN curl https://labs.consol.de/repo/stable/RPM-GPG-KEY | gpg --dearmor > /etc/apt/trusted.gpg.d/thruk.gpg
+RUN echo "deb http://labs.consol.de/repo/stable/debian bullseye main" > /etc/apt/sources.list.d/labs-consol-stable.list
 
 RUN apt-get update && \
     apt-get install -y thruk && \
-    apt-get clean
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY start-thruk.sh /usr/local/bin
 COPY etc/apache2/sites-available/* /etc/apache2/sites-available/
